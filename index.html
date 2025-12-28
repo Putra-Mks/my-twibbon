@@ -1,17 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twibbon Maker Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <div class="container">
-        <h1>Twibbon Maker</h1>
-        <p>Pilih fotomu untuk digabungkan dengan twibbon</p>
-        
-        <input type="file" id="upload" accept="image/*">
-        
-        <div id="preview-container">
-            <img id="preview-img" alt="Preview">
-            <canvas id="canvas" width="1080" height="1080" style="display:none;"></canvas>
-        </div>
 
-        <button id="download" disabled>Download Hasil</button>
+    <div class="container">
+        <header>
+            <h1>Twibbon Generator</h1>
+            <p>Unggah foto terbaikmu dan bagikan ke media sosial!</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <label for="upload" class="custom-file-upload">
+                    <span>Pilih Foto</span>
+                </label>
+                <input type="file" id="upload" accept="image/*">
+            </div>
+
+            <div id="preview-container">
+                <img id="preview-img" src="" alt="Preview Hasil">
+                <div id="placeholder-text">Foto kamu akan muncul di sini</div>
+                <canvas id="canvas" width="1080" height="1080" style="display:none;"></canvas>
+            </div>
+
+            <div class="action-section">
+                <button id="download" disabled>Simpan Gambar</button>
+                <p class="note">*Klik tombol simpan setelah preview muncul</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Created with GitHub Pages</p>
+        </footer>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
+</html>
