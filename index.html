@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twibbon Maker Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Twibbon Maker Interaktif</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,26 +12,34 @@
     <div class="container">
         <header>
             <h1>Twibbon Generator</h1>
-            <p>Unggah foto terbaikmu dan bagikan ke media sosial!</p>
+            <p>Atur posisinya agar pas di tengah!</p>
         </header>
 
         <main>
-            <div class="upload-section">
-                <label for="upload" class="custom-file-upload">
-                    <span>Pilih Foto</span>
-                </label>
-                <input type="file" id="upload" accept="image/*">
+            <div id="preview-container">
+                <div id="user-photo-container">
+                    <img id="user-photo" src="" alt="">
+                </div>
+                
+                <img id="twibbon-overlay" src="twibbon.png" alt="Frame Twibbon">
             </div>
 
-            <div id="preview-container">
-                <img id="preview-img" src="" alt="Preview Hasil">
-                <div id="placeholder-text">Foto kamu akan muncul di sini</div>
-                <canvas id="canvas" width="1080" height="1080" style="display:none;"></canvas>
+            <div class="controls-section">
+                <label for="upload" class="btn btn-upload">
+                    Upload Foto
+                    <input type="file" id="upload" accept="image/*">
+                </label>
+                
+                <div class="zoom-controls">
+                    <button id="btn-zoom-out">-</button>
+                    <span>Zoom</span>
+                    <button id="btn-zoom-in">+</button>
+                </div>
             </div>
 
             <div class="action-section">
                 <button id="download" disabled>Simpan Gambar</button>
-                <p class="note">*Klik tombol simpan setelah preview muncul</p>
+                <p class="note" id="status-text">*Upload foto lalu geser untuk mengatur posisi</p>
             </div>
         </main>
 
@@ -42,4 +51,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
