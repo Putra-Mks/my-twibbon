@@ -169,28 +169,56 @@ if (navigator.share && navigator.canShare) {
 }
 
 shareBtn.addEventListener('click', async () => {
-    // Kita gunakan html2canvas lagi untuk mengambil posisi foto terbaru
-    const canvasResult = await html2canvas(previewContainer, {
-        scale: 2,
-        useCORS: true
-    });
+    // Ubah teks sementara agar user tahu proses sedang berjalan
+    const originalText = shareBtn.innerText;
+    shareBtn.innerText = "Memproses...";
+    shareBtn.disabled = true;
 
-    // Ubah hasil tangkapan menjadi file biner (Blob)
-    canvasResult.toBlob(async (blob) => {
-        const file = new File([blob], 'twibbon-keren.png', { type: 'image/png' });
-        
-        try {
-            // Memanggil menu share bawaan HP
-            await navigator.share({
-                title: 'Twibbon Saya',
-                text: 'Halo! Lihat Twibbon saya untuk acara ini. Yuk buat juga!',
-                files: [file]
-            });
-        } catch (err) {
-            console.log("User membatalkan share atau terjadi error:", err);
-        }
-    }, 'image/png');
+    try {
+        // Ambil tangkapan layar area twibbon
+        const canvasResult = await html2canvas(previewContainer, {
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+
+        // Ubah canvas menjadi file Blob (Binary)
+        canvasResult.toBlob(async (blob) => {
+            if (!blob) {
+                alert("Gagal memproses gambar.");
+                return;
+            }
+
+            const file = new File([blob], 'twibbon-astanaraya.png', { type: 'image/png' });
+
+            // Cek apakah data bisa di-share
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: 'Twibbon Astanaraya',
+                        text: 'Halo! Lihat Twibbon saya di Astanaraya Suites Hotel. Yuk buat juga!',
+                        files: [file]
+                    });
+                } catch (shareError) {
+                    console.log("Berbagi dibatalkan atau error:", shareError);
+                }
+            } else {
+                alert("Browser Anda tidak mendukung fitur berbagi file langsung. Silakan gunakan tombol Simpan Gambar.");
+            }
+            
+            // Kembalikan tombol ke keadaan semula
+            shareBtn.innerText = originalText;
+            shareBtn.disabled = false;
+        }, 'image/png');
+
+    } catch (err) {
+        console.error("Gagal share:", err);
+        alert("Terjadi kesalahan saat menyiapkan gambar.");
+        shareBtn.innerText = originalText;
+        shareBtn.disabled = false;
+    }
 });
+
 
 
 
