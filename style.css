@@ -113,13 +113,22 @@ input[type="file"] { display: none; }
 }
 .zoom-controls span { margin: 0 10px; font-size: 0.8rem; color: #666; }
 
-#download {
-    width: 100%;
-    padding: 14px;
-    background: #28a745;
-    color: white;
-    font-size: 1rem;
+.action-section {
+    display: flex;
+    flex-direction: column; /* Mengatur tombol agar berjejer ke bawah */
+    align-items: center;    /* Mengatur semua isi di dalam ke tengah */
+    gap: 10px;              /* Memberi jarak antar tombol agar tidak menempel */
+    margin-top: 20px;
 }
+
+#download, #share-btn {
+    width: 100%;            /* Tombol akan selebar kontainer (bagus untuk HP) */
+    max-width: 300px;       /* Batas lebar maksimal agar tidak terlalu panjang */
+    margin-left: auto;      /* Teknik cadangan untuk center */
+    margin-right: auto;
+    display: block;
+}
+
 #download:disabled { background: #ccc; cursor: not-allowed; }
 .note { font-size: 0.8rem; color: #999; margin-top: 10px; }
 
@@ -128,3 +137,4 @@ footer {
     font-size: 0.8rem;
     color: #bbb;
 }
+
