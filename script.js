@@ -28,7 +28,11 @@ uploadInput.addEventListener('change', function(e) {
         // Tampilkan kontainer foto setelah gambar dimuat
         userPhoto.onload = () => {
              userPhotoContainer.style.opacity = '1';
+             downloadBtn.style.display = 'block';
              downloadBtn.disabled = false;
+             if (navigator.share) {
+                 shareBtn.style.display = 'block';
+             }
              statusText.innerText = "*Geser foto atau gunakan zoom untuk menyesuaikan";
         };
     }
@@ -164,4 +168,5 @@ shareBtn.addEventListener('click', async () => {
         }
     }, 'image/png');
 });
+
 
