@@ -25,17 +25,29 @@
             </div>
 
             <div class="controls-section">
-                <label for="upload" class="btn btn-upload">
+                <button type="button" id="main-upload-btn" class="btn btn-upload">
                     📸 Ambil Foto
-                    <input type="file" id="upload" accept="image/*" multiple="false">
-                </label>
-                
+                </button>
+
+                <input type="file" id="input-gallery" accept="image/*" style="display: none;">
+                <input type="file" id="input-camera" accept="image/*" capture="environment" style="display: none;">
+
                 <div class="zoom-controls">
                     <button id="btn-zoom-out">-</button>
                     <span>Zoom</span>
                     <button id="btn-zoom-in">+</button>
                 </div>
             </div>
+
+            <div id="upload-modal" class="modal">
+                <div class="modal-content">
+                    <h3>Pilih Sumber Foto</h3>
+                    <button id="pick-camera" class="modal-btn">📸 Kamera (Selfie)</button>
+                    <button id="pick-gallery" class="modal-btn">📁 Galeri Foto</button>
+                    <button id="close-modal" class="modal-btn-cancel">Batal</button>
+                </div>
+            </div>
+            
             <div class="action-section">
                 <button id="download">Simpan Gambar</button>
                 <button id="share-btn" class="btn" style="background: #007bff; color: white;">Bagikan ke Media Sosial</button>
@@ -51,6 +63,7 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
