@@ -1,4 +1,8 @@
 // Element DOM
+const mainUploadBtn = document.getElementById('main-upload-btn');
+const uploadModal = document.getElementById('upload-modal');
+const inputGallery = document.getElementById('input-gallery');
+const inputCamera = document.getElementById('input-camera');
 const uploadInput = document.getElementById('upload');
 const userPhotoContainer = document.getElementById('user-photo-container');
 const userPhoto = document.getElementById('user-photo');
@@ -14,30 +18,49 @@ let isDragging = false;
 let startX, startY, lastPosX, lastPosY;
 
 // --- 1. FUNGSI UPLOAD ---
-uploadInput.addEventListener('change', function(e) {
+mainUploadBtn.addEventListener('click', () => {
+    uploadModal.style.display = 'flex';
+});
+
+// Tutup Modal
+document.getElementById('close-modal').addEventListener('click', () => {
+    uploadModal.style.display = 'none';
+});
+
+// Jika pilih Kamera
+document.getElementById('pick-camera').addEventListener('click', () => {
+    inputCamera.click();
+    uploadModal.style.display = 'none';
+});
+
+// Jika pilih Galeri
+document.getElementById('pick-gallery').addEventListener('click', () => {
+    inputGallery.click();
+    uploadModal.style.display = 'none';
+});
+
+// Fungsi untuk memproses gambar (Gunakan fungsi handleImage yang sudah kita buat sebelumnya)
+function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function(event) {
-        // Reset posisi dan skala saat upload foto baru
         posX = 0; posY = 0; scale = 1;
         updateTransform();
-        
         userPhoto.src = event.target.result;
-        // Tampilkan kontainer foto setelah gambar dimuat
         userPhoto.onload = () => {
              userPhotoContainer.style.opacity = '1';
-             downloadBtn.style.display = 'block';
-             downloadBtn.disabled = false;
-             if (navigator.share) {
-                 shareBtn.style.display = 'block';
-             }
+             document.getElementById('download').style.display = 'block'; 
+             if (navigator.share) document.getElementById('share-btn').style.display = 'block';
              statusText.innerText = "*Geser foto atau gunakan zoom untuk menyesuaikan";
         };
     }
     reader.readAsDataURL(file);
-});
+}
+
+inputGallery.addEventListener('change', handleImage);
+inputCamera.addEventListener('change', handleImage);
 
 
 // --- 2. FUNGSI DRAG/GESER (Mouse & Touch) ---
@@ -168,5 +191,6 @@ shareBtn.addEventListener('click', async () => {
         }
     }, 'image/png');
 });
+
 
 
