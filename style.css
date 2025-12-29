@@ -88,12 +88,18 @@ header p { color: #666; margin-bottom: 20px; font-size: 0.9rem; }
 }
 
 .btn-upload {
-    background: #e8f0fe;
-    color: #1a73e8;
-    display: flex;
-    align-items: center;
+    background: #1a73e8; /* Ubah warna jadi biru solid agar lebih terlihat */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 1rem;
+    display: inline-block;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: 0.3s;
 }
-.btn-upload:hover { background: #d0e1fd; }
+
+.btn-upload:hover { background: #1557b0; }
 input[type="file"] { display: none; }
 
 .zoom-controls {
@@ -144,6 +150,7 @@ footer {
     font-size: 0.8rem;
     color: #bbb;
 }
+
 
 
 
