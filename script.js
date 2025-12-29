@@ -1,45 +1,42 @@
-// Element DOM
+// --- 1. INISIALISASI ELEMEN ---
 const mainUploadBtn = document.getElementById('main-upload-btn');
 const uploadModal = document.getElementById('upload-modal');
 const inputGallery = document.getElementById('input-gallery');
 const inputCamera = document.getElementById('input-camera');
-const uploadInput = document.getElementById('upload');
+
 const userPhotoContainer = document.getElementById('user-photo-container');
 const userPhoto = document.getElementById('user-photo');
 const downloadBtn = document.getElementById('download');
+const shareBtn = document.getElementById('share-btn'); // Pastikan ID ini ada di HTML
 const statusText = document.getElementById('status-text');
 const previewContainer = document.getElementById('preview-container');
 const btnZoomIn = document.getElementById('btn-zoom-in');
 const btnZoomOut = document.getElementById('btn-zoom-out');
 
-// Variabel untuk melacak posisi dan skala
 let posX = 0, posY = 0, scale = 1;
 let isDragging = false;
 let startX, startY, lastPosX, lastPosY;
 
-// --- 1. FUNGSI UPLOAD ---
-mainUploadBtn.addEventListener('click', () => {
-    uploadModal.style.display = 'flex';
-});
+// --- 2. LOGIKA MODAL ---
+if (mainUploadBtn) {
+    mainUploadBtn.addEventListener('click', () => uploadModal.style.display = 'flex');
+}
 
-// Tutup Modal
-document.getElementById('close-modal').addEventListener('click', () => {
+document.getElementById('close-modal')?.addEventListener('click', () => {
     uploadModal.style.display = 'none';
 });
 
-// Jika pilih Kamera
-document.getElementById('pick-camera').addEventListener('click', () => {
+document.getElementById('pick-camera')?.addEventListener('click', () => {
     inputCamera.click();
     uploadModal.style.display = 'none';
 });
 
-// Jika pilih Galeri
-document.getElementById('pick-gallery').addEventListener('click', () => {
+document.getElementById('pick-gallery')?.addEventListener('click', () => {
     inputGallery.click();
     uploadModal.style.display = 'none';
 });
 
-// Fungsi untuk memproses gambar (Gunakan fungsi handleImage yang sudah kita buat sebelumnya)
+// --- 3. FUNGSI HANDLE GAMBAR ---
 function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -50,175 +47,97 @@ function handleImage(e) {
         updateTransform();
         userPhoto.src = event.target.result;
         userPhoto.onload = () => {
-             userPhotoContainer.style.opacity = '1';
-             document.getElementById('download').style.display = 'block'; 
-             if (navigator.share) document.getElementById('share-btn').style.display = 'block';
-             statusText.innerText = "*Geser foto atau gunakan zoom untuk menyesuaikan";
+            userPhotoContainer.style.opacity = '1';
+            if (downloadBtn) downloadBtn.style.display = 'block';
+            
+            // CEK DUKUNGAN SHARE DISINI
+            if (navigator.share && shareBtn) {
+                shareBtn.style.display = 'block';
+            }
+            statusText.innerText = "*Geser foto atau gunakan zoom untuk menyesuaikan";
         };
     }
     reader.readAsDataURL(file);
 }
 
-inputGallery.addEventListener('change', handleImage);
-inputCamera.addEventListener('change', handleImage);
+inputGallery?.addEventListener('change', handleImage);
+inputCamera?.addEventListener('change', handleImage);
 
-
-// --- 2. FUNGSI DRAG/GESER (Mouse & Touch) ---
-
-function startDrag(e) {
-    if (downloadBtn.disabled) return; // Cegah drag jika belum ada foto
-    isDragging = true;
-    // Ambil posisi awal kursor/jari
-    startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-    startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-    lastPosX = posX;
-    lastPosY = posY;
-    userPhoto.style.cursor = 'grabbing';
-}
-
-function doDrag(e) {
-    if (!isDragging) return;
-    e.preventDefault(); // Mencegah scrolling halaman di HP saat drag
-
-    // Ambil posisi kursor/jari saat ini
-    const currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-    const currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-
-    // Hitung perubahannya
-    const deltaX = currentX - startX;
-    const deltaY = currentY - startY;
-
-    // Update posisi
-    posX = lastPosX + deltaX;
-    posY = lastPosY + deltaY;
-
-    updateTransform();
-}
-
-function stopDrag() {
-    isDragging = false;
-    userPhoto.style.cursor = 'grab';
-}
-
-// Terapkan perubahan posisi dan skala ke CSS
+// --- 4. LOGIKA DRAG & ZOOM ---
 function updateTransform() {
     userPhoto.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
 }
 
-// Event Listeners untuk Mouse (PC)
-previewContainer.addEventListener('mousedown', startDrag);
-window.addEventListener('mousemove', doDrag);
-window.addEventListener('mouseup', stopDrag);
-
-// Event Listeners untuk Touch (HP)
-previewContainer.addEventListener('touchstart', startDrag, { passive: false });
-window.addEventListener('touchmove', doDrag, { passive: false });
-window.addEventListener('touchend', stopDrag);
-
-
-// --- 3. FUNGSI ZOOM ---
-btnZoomIn.addEventListener('click', () => {
-    if(downloadBtn.disabled) return;
-    scale += 0.1;
-    updateTransform();
-});
-
-btnZoomOut.addEventListener('click', () => {
-    if(downloadBtn.disabled || scale <= 0.2) return; // Batas minimum zoom
-    scale -= 0.1;
-    updateTransform();
-});
-
-
-// --- 4. FUNGSI DOWNLOAD (Menggunakan html2canvas) ---
-downloadBtn.addEventListener('click', function() {
-    statusText.innerText = "Sedang memproses gambar...";
-    downloadBtn.disabled = true;
-
-    // html2canvas akan "memotret" area #preview-container
-    html2canvas(previewContainer, {
-        scale: 2, // Meningkatkan resolusi hasil akhir (agar tidak buram)
-        backgroundColor: null, // Agar background transparan jika ada
-        logging: false,
-        useCORS: true // Penting untuk memuat gambar dari sumber eksternal jika ada
-    }).then(canvas => {
-        // Convert canvas ke image dan download
-        const link = document.createElement('a');
-        link.download = 'twibbon-saya.png';
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-
-        // Kembalikan status tombol
-        statusText.innerText = "*Gambar berhasil disimpan!";
-        downloadBtn.disabled = false;
-    }).catch(err => {
-        console.error("Gagal membuat gambar:", err);
-        statusText.innerText = "Error saat memproses gambar.";
-        downloadBtn.disabled = false;
-    });
-});
-
-const shareBtn = document.getElementById('share-btn');
-
-// Cek apakah browser mendukung fitur Share (biasanya aktif di HP/Mobile)
-if (navigator.share && navigator.canShare) {
-    // Tombol Share hanya muncul jika sudah ada foto yang diupload
-    uploadInput.addEventListener('change', () => {
-        shareBtn.style.display = 'block';
-    });
+function startDrag(e) {
+    if (!userPhoto.src) return;
+    isDragging = true;
+    startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+    lastPosX = posX; lastPosY = posY;
 }
 
-shareBtn.addEventListener('click', async () => {
-    // Ubah teks sementara agar user tahu proses sedang berjalan
-    const originalText = shareBtn.innerText;
-    shareBtn.innerText = "Memproses...";
-    shareBtn.disabled = true;
+function doDrag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    const currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+    posX = lastPosX + (currentX - startX);
+    posY = lastPosY + (currentY - startY);
+    updateTransform();
+}
 
+previewContainer.addEventListener('mousedown', startDrag);
+window.addEventListener('mousemove', doDrag);
+window.addEventListener('mouseup', () => isDragging = false);
+previewContainer.addEventListener('touchstart', startDrag, { passive: false });
+window.addEventListener('touchmove', doDrag, { passive: false });
+window.addEventListener('touchend', () => isDragging = false);
+
+btnZoomIn?.addEventListener('click', () => { scale += 0.1; updateTransform(); });
+btnZoomOut?.addEventListener('click', () => { if(scale > 0.2) scale -= 0.1; updateTransform(); });
+
+// --- 5. FUNGSI DOWNLOAD ---
+downloadBtn?.addEventListener('click', async () => {
+    statusText.innerText = "Memproses gambar...";
+    const canvas = await html2canvas(previewContainer, { scale: 2, useCORS: true });
+    const link = document.createElement('a');
+    link.download = 'twibbon-astanaraya.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    statusText.innerText = "*Gambar berhasil disimpan!";
+});
+
+// --- 6. FUNGSI SHARE (REVISED) ---
+shareBtn?.addEventListener('click', async () => {
     try {
-        // Ambil tangkapan layar area twibbon
-        const canvasResult = await html2canvas(previewContainer, {
+        statusText.innerText = "Menyiapkan menu berbagi...";
+        
+        // Buat canvas dari preview
+        const canvas = await html2canvas(previewContainer, {
             scale: 2,
             useCORS: true,
             logging: false
         });
 
-        // Ubah canvas menjadi file Blob (Binary)
-        canvasResult.toBlob(async (blob) => {
-            if (!blob) {
-                alert("Gagal memproses gambar.");
-                return;
-            }
-
+        // Convert ke Blob
+        canvas.toBlob(async (blob) => {
+            if (!blob) return;
             const file = new File([blob], 'twibbon-astanaraya.png', { type: 'image/png' });
 
-            // Cek apakah data bisa di-share
+            // PENTING: Cek izin share file
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        title: 'Twibbon Astanaraya',
-                        text: 'Halo! Lihat Twibbon saya di Astanaraya Suites Hotel. Yuk buat juga!',
-                        files: [file]
-                    });
-                } catch (shareError) {
-                    console.log("Berbagi dibatalkan atau error:", shareError);
-                }
+                await navigator.share({
+                    files: [file],
+                    title: 'Twibbon Astanaraya',
+                    text: 'Yuk pakai Twibbon Astanaraya Suites Hotel!'
+                });
+                statusText.innerText = "*Berhasil dibagikan!";
             } else {
-                alert("Browser Anda tidak mendukung fitur berbagi file langsung. Silakan gunakan tombol Simpan Gambar.");
+                alert("Browser tidak mendukung berbagi file. Gunakan tombol Simpan Gambar.");
             }
-            
-            // Kembalikan tombol ke keadaan semula
-            shareBtn.innerText = originalText;
-            shareBtn.disabled = false;
         }, 'image/png');
-
     } catch (err) {
-        console.error("Gagal share:", err);
-        alert("Terjadi kesalahan saat menyiapkan gambar.");
-        shareBtn.innerText = originalText;
-        shareBtn.disabled = false;
+        console.error("Error sharing:", err);
+        statusText.innerText = "*Gagal memproses berbagi.";
     }
 });
-
-
-
-
