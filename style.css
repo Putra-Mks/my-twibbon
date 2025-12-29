@@ -1,126 +1,127 @@
-/* Reset Dasar */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* Reset dan Gaya Dasar */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #eef2f7;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 15px;
+    padding: 20px;
+    overscroll-behavior: none; /* Mencegah refresh saat drag di HP */
 }
 
 .container {
     width: 100%;
-    max-width: 450px; /* Lebar maksimal agar tidak terlalu lebar di PC */
+    max-width: 420px;
     background: #ffffff;
-    padding: 20px;
+    padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
     text-align: center;
 }
 
-header h1 {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-    color: #1a73e8;
-}
+header h1 { color: #333; margin-bottom: 10px; }
+header p { color: #666; margin-bottom: 20px; font-size: 0.9rem; }
 
-header p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-/* Tombol Upload Custom */
-.upload-section {
-    margin-bottom: 20px;
-}
-
-.custom-file-upload {
-    display: inline-block;
-    padding: 10px 20px;
-    cursor: pointer;
-    background: #e8f0fe;
-    color: #1a73e8;
-    border-radius: 50px;
-    font-weight: bold;
-    border: 2px solid #1a73e8;
-    transition: 0.3s;
-}
-
-.custom-file-upload:hover {
-    background: #1a73e8;
-    color: white;
-}
-
-input[type="file"] {
-    display: none; /* Sembunyikan input asli yang jelek */
-}
-
-/* Container Preview */
+/* --- INI BAGIAN PENTING UNTUK LAYER --- */
 #preview-container {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Tetap kotak di layar manapun */
-    background: #f8f9fa;
-    border: 2px dashed #ccc;
+    aspect-ratio: 1 / 1; /* Menjaga agar tetap kotak */
+    position: relative; /* Menjadi patokan untuk elemen absolute di dalamnya */
+    overflow: hidden; /* Memotong foto yang keluar area */
     border-radius: 12px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    border: 2px solid #ddd;
+    background-color: #f8f8f8; /* Warna background jika twibbon transparan */
     margin-bottom: 20px;
+    touch-action: none; /* Penting untuk drag di HP */
 }
 
-#preview-img {
+/* Lapisan Bawah (Foto User) */
+#user-photo-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Awalnya tersembunyi sampai ada upload */
+    opacity: 0; 
+    transition: opacity 0.3s;
+}
+
+#user-photo {
+    /* Foto akan diatur ukurannya lewat JS, tapi ini defaultnya */
+    max-width: 100%; 
+    pointer-events: auto; /* Agar bisa menerima event drag */
+    cursor: grab;
+}
+#user-photo:active { cursor: grabbing; }
+
+/* Lapisan Atas (Frame Twibbon) */
+#twibbon-overlay {
+    position: absolute;
+    top: 0; left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    display: none;
-    z-index: 2;
+    z-index: 10; /* Pastikan di atas foto user */
+    pointer-events: none; /* PENTING: Agar klik/sentuhan tembus ke foto di bawahnya */
+}
+/* -------------------------------------- */
+
+
+/* Kontrol Tombol */
+.controls-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
 }
 
-#placeholder-text {
-    color: #aaa;
-    font-size: 0.9rem;
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
 }
 
-/* Tombol Download */
+.btn-upload {
+    background: #e8f0fe;
+    color: #1a73e8;
+    display: flex;
+    align-items: center;
+}
+.btn-upload:hover { background: #d0e1fd; }
+input[type="file"] { display: none; }
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    background: #f0f2f5;
+    padding: 5px;
+    border-radius: 8px;
+}
+.zoom-controls button {
+    width: 35px; height: 35px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.zoom-controls span { margin: 0 10px; font-size: 0.8rem; color: #666; }
+
 #download {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     background: #28a745;
     color: white;
-    border: none;
-    border-radius: 12px;
     font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
 }
-
-#download:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-#download:hover:not(:disabled) {
-    background: #218838;
-    transform: translateY(-2px);
-}
-
-.note {
-    font-size: 0.75rem;
-    color: #999;
-    margin-top: 10px;
-}
+#download:disabled { background: #ccc; cursor: not-allowed; }
+.note { font-size: 0.8rem; color: #999; margin-top: 10px; }
 
 footer {
     margin-top: 20px;
