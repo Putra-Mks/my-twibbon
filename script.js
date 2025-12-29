@@ -130,3 +130,38 @@ downloadBtn.addEventListener('click', function() {
         downloadBtn.disabled = false;
     });
 });
+
+const shareBtn = document.getElementById('share-btn');
+
+// Cek apakah browser mendukung fitur Share (biasanya aktif di HP/Mobile)
+if (navigator.share && navigator.canShare) {
+    // Tombol Share hanya muncul jika sudah ada foto yang diupload
+    uploadInput.addEventListener('change', () => {
+        shareBtn.style.display = 'block';
+    });
+}
+
+shareBtn.addEventListener('click', async () => {
+    // Kita gunakan html2canvas lagi untuk mengambil posisi foto terbaru
+    const canvasResult = await html2canvas(previewContainer, {
+        scale: 2,
+        useCORS: true
+    });
+
+    // Ubah hasil tangkapan menjadi file biner (Blob)
+    canvasResult.toBlob(async (blob) => {
+        const file = new File([blob], 'twibbon-keren.png', { type: 'image/png' });
+        
+        try {
+            // Memanggil menu share bawaan HP
+            await navigator.share({
+                title: 'Twibbon Saya',
+                text: 'Halo! Lihat Twibbon saya untuk acara ini. Yuk buat juga!',
+                files: [file]
+            });
+        } catch (err) {
+            console.log("User membatalkan share atau terjadi error:", err);
+        }
+    }, 'image/png');
+});
+
